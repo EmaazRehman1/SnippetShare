@@ -1,8 +1,13 @@
+import CodeEditor from '@/components/shared/CodeEditor'
+import { LanguageSelector } from '@/components/shared/LanguageSelector'
 import React from 'react'
 
 const Feed = () => {
   return (
-    <div>feed</div>
+    <div>
+      <LanguageSelector/>
+      <CodeEditor language='javascript' value='console.log("Hello, world!");'/>
+    </div>
   )
 }
 

@@ -2,7 +2,6 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Github } from "lucide-react";
-// import { signIn } from "@/auth";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 export default function Home() {

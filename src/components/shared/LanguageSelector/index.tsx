@@ -1,12 +1,9 @@
 'use client'
-import { useEffect, useMemo, useState } from 'react';
-
-import { useMonaco } from '@monaco-editor/react';
-import { Popover } from '@/components/ui/popover';
-import { PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-import { Check, CheckIcon, ChevronsUpDown, ChevronsUpDownIcon } from 'lucide-react';
-import { PopoverContent } from '@/components/ui/popover';
+import { useMemo, useState } from 'react'
+import { useMonaco } from '@monaco-editor/react'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { Button } from '@/components/ui/button'
+import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react'
 import {
   Command,
   CommandEmpty,
@@ -14,24 +11,25 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
-import { cn } from '@/lib/utils';
+} from '@/components/ui/command'
+import { cn } from '@/lib/utils'
 
+type LanguageSelectorProps = {
+  value: string
+  onChange: (value: string) => void
+}
 
-export const LanguageSelector = () => {
+export const LanguageSelector = ({ value, onChange }: LanguageSelectorProps) => {
   const monaco = useMonaco()
   const [open, setOpen] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState("")
-  console.log(selectedLanguage)
+
   const AllLanguages = useMemo(() => {
     const languages = monaco?.languages?.getLanguages()
     if (!languages) return []
-    console.log(languages)
     return languages
-
   }, [monaco])
-  return (
 
+  return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
@@ -40,9 +38,9 @@ export const LanguageSelector = () => {
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          {selectedLanguage
-            ? AllLanguages.find((language) => language.id === selectedLanguage)?.id
-            : "Select language..."}
+          {value
+            ? AllLanguages.find((language) => language.id === value)?.id
+            : 'Select language...'}
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -52,26 +50,26 @@ export const LanguageSelector = () => {
           <CommandList>
             <CommandEmpty>No language found.</CommandEmpty>
             <CommandGroup>
-              {AllLanguages.map((language:any) => (
+              {AllLanguages.map((language: any) => (
                 <CommandItem
                   key={language.id}
                   value={language.id}
                   onSelect={(currentValue) => {
-                    setSelectedLanguage(currentValue === selectedLanguage ? "" : currentValue)
+                    onChange(currentValue) // ✅ update react-hook-form
                     setOpen(false)
                   }}
                 >
                   <CheckIcon
                     className={cn(
-                      "mr-2 h-4 w-4",
-                      selectedLanguage === language.id ? "opacity-100" : "opacity-0"
+                      'mr-2 h-4 w-4',
+                      value === language.id ? 'opacity-100' : 'opacity-0'
                     )}
                   />
                   {language.aliases?.[0] || language.id}
                 </CommandItem>
               ))}
             </CommandGroup>
-          </CommandList> 
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>

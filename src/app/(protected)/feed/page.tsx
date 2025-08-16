@@ -6,7 +6,7 @@ const Feed = () => {
   return (
     <div>
       <LanguageSelector/>
-      <CodeEditor language='javascript' value='console.log("Hello, world!");'/>
+      <CodeEditor language='python' value='console.log("Hello, world!");'/>
     </div>
   )
 }

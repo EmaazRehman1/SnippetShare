@@ -7,7 +7,7 @@ type Props = {
     onChange?: (value: string | undefined) => void;
     height?: string;
 }
-function CodeEditor({ language, value, onChange, height }: Props) {
+function CodeEditor({ language, value, onChange, height='60vh' }: Props) {
     const handleChange = (value: string | undefined) => {
         if (onChange && value) {
             onChange(value);
@@ -18,8 +18,8 @@ function CodeEditor({ language, value, onChange, height }: Props) {
 
         <Editor
             theme='vs-dark'
-            height="400px"
-            width="50%"
+            height={height}
+            width="80%"
             defaultLanguage={language}
             value={value} language={language}
             onChange={handleChange} 

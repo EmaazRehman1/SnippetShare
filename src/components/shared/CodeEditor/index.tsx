@@ -14,12 +14,12 @@ function CodeEditor({ language, value, onChange, height='60vh' }: Props) {
         }
     };
     return (
-        <div className='flex w-full justify-center items-center mt-10'>
+        <div className='flex w-full justify-center items-center'>
 
         <Editor
             theme='vs-dark'
             height={height}
-            width="80%"
+            width="100%"
             defaultLanguage={language}
             value={value} language={language}
             onChange={handleChange} 

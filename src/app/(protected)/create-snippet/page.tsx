@@ -20,27 +20,50 @@ import CodeEditor from '@/components/shared/CodeEditor'
 import { Button } from '@/components/ui/button'
 import { LanguageSelector } from '@/components/shared/LanguageSelector'
 import { useUser } from '@/common/hooks/useUser'
-import { createSnippetAction } from '@/common/actions/create-snippet'
-const CreateSnippet = () => {
+import { createSnippetAction } from '@/common/actions/snippets'
+import { toast } from 'sonner'
 
-    const {user}=useUser();
+const CreateSnippet = () => {
+    const { user } = useUser();
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema)
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            language: '',
+            code: '',
+            title: '',
+            description: '',
+            tags: ''
+        }
     })
 
-    const onSubmit = async (data: z.infer<typeof formSchema>) => {
-        let finalTags: string[] = [];
-        if(data.tags){
-            finalTags = data.tags?.split(',').map((tag) => tag.trim())
-        }
-        const body={...data,authorId:user?.id,tags:finalTags}
-        console.log(body)
-        try{
-            const resp=await createSnippetAction(body)
-            form.reset();
-            console.log("child func",resp)
+    const selectedLanguage = form.watch('language')
 
-        }catch(error:any){
+    const onSubmit = async (data: z.infer<typeof formSchema>) => {
+        if (!selectedLanguage) {
+            toast.error('Please select a language first')
+            return
+        }
+
+        let finalTags: string[] = [];
+        if (data.tags) {
+            finalTags = data.tags.split(',').map((tag) => tag.trim())
+        }
+        const body = { ...data, authorId: user?.id, tags: finalTags }
+        
+        try {
+            const resp = await createSnippetAction(body)
+            if (resp.success) {
+                toast.success(resp.message)
+                form.reset({
+                    code: '',
+                    title: '',
+                    description: '',
+                    language: '',
+                    tags: ''
+                });
+            }
+        } catch (error: any) {
+            toast.error("Failed to create snippet")
             console.log(error)
         }
     }
@@ -57,25 +80,50 @@ const CreateSnippet = () => {
                     {/* Left side - Code Editor */}
                     <div className="flex-1">
                         <FormField
-                            name="code"
+                            name="language"
                             control={form.control}
                             render={({ field }) => (
-                                <FormItem className="h-full">
+                                <FormItem className="mb-4">
+                                    <FormLabel>Language *</FormLabel>
                                     <FormControl>
-                                        
-                                        <div className="rounded-md overflow-hidden border">
-                                            <CodeEditor
-                                                language={form.getValues('language')}
-                                                value={field.value}
-                                                onChange={field.onChange}
-                                                height="350px"
-                                            />
-                                        </div>
+                                        <LanguageSelector 
+                                            value={field.value} 
+                                            onChange={field.onChange} 
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+
+                        {selectedLanguage ? (
+                            <FormField
+                                name="code"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <FormItem className="h-full">
+                                        <FormLabel>Code *</FormLabel>
+                                        <FormControl>
+                                            <div className="rounded-md overflow-hidden border mt-2">
+                                                <CodeEditor
+                                                    language={selectedLanguage}
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    height="350px"
+                                                />
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        ) : (
+                            <div className="flex items-center justify-center h-[350px] border rounded-md bg-muted/50">
+                                <p className="text-muted-foreground">
+                                    Please select a language to start coding
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Right side - Form fields */}
@@ -85,7 +133,7 @@ const CreateSnippet = () => {
                             control={form.control}
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Title</FormLabel>
+                                    <FormLabel>Title *</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Enter snippet title" {...field} />
                                     </FormControl>
@@ -114,20 +162,6 @@ const CreateSnippet = () => {
                         />
 
                         <FormField
-                            name='language'
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Language</FormLabel>
-                                    <FormControl>
-                                        <LanguageSelector value={field.value} onChange={field.onChange} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
                             name="tags"
                             control={form.control}
                             render={({ field }) => (
@@ -139,15 +173,19 @@ const CreateSnippet = () => {
                                             {...field}
                                         />
                                     </FormControl>
-                                        <FormDescription>
-                                            Add comma-separated
-                                        </FormDescription>
+                                    <FormDescription>
+                                        Add comma-separated tags
+                                    </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
                         
-                        <Button type="submit" className="mt-4 w-full">
+                        <Button 
+                            type="submit" 
+                            className="mt-4 w-full"
+                            disabled={!selectedLanguage}
+                        >
                             Save Snippet
                         </Button>
                     </div>

@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from "@/lib/db"
+import { Description } from "@radix-ui/react-dialog"
 import { revalidatePath } from "next/cache"
 
 export const createSnippetAction = async (data: any) => {
@@ -26,10 +27,37 @@ export const createSnippetAction = async (data: any) => {
 }
 
 
-export const getAllSnippets = async () => {
+export const getAllSnippets = async (page: number, limit = 4,searchText?:string) => {
+  const skipRecords= (page-1)*limit
+
   try {
+   const filters: any = {
+      isPublic: true,
+      ...(searchText
+        ? {
+            OR: [
+              {
+                title: {
+                  contains: searchText,
+                  mode: "insensitive",
+                },
+              },
+              {
+                description: {
+                  contains: searchText,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : {}),
+    }
+    const total=await db.snippet.count({
+      where: filters
+    })
     const snippets = await db.snippet.findMany(
       {
+        where: filters,
         include: {
           author: {
             select: {
@@ -40,13 +68,21 @@ export const getAllSnippets = async () => {
         },
         orderBy: {
           createdAt: 'desc'
-        }
+        },
+        skip: skipRecords,
+        take: limit
       }
     );
     return {
       success: true,
       snippets,
-      message: "Snippets fetched successfully"
+      message: "Snippets fetched successfully",
+       pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
     }
 
   } catch (error: any) {

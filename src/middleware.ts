@@ -18,6 +18,7 @@ export default auth((req) => {
 
     if(isAuthRoute) {
         if(isLoggedIn) {
+            console.log("User is logged in",req.auth);
             return Response.redirect(new URL(DEFAULT_LOGIN_DIRECT, nextUrl))
         }
 
@@ -34,3 +35,57 @@ export default auth((req) => {
 export const config = {
   matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 };
+// import NextAuth from "next-auth";
+// import jwt from "jsonwebtoken"; // for manual token verification if needed
+// import authConfig from "./auth.config";
+// import { DEFAULT_LOGIN_DIRECT, apiAuthPrefix, authRoutes, publicRoutes } from "./routes";
+
+// const { auth } = NextAuth(authConfig);
+
+// // @ts-ignore
+// export default auth(async (req) => {
+//   const { nextUrl } = req;
+//   let isLoggedIn: boolean = !!req.auth; // NextAuth session login
+//   const isApiAuthRoute: boolean = nextUrl.pathname.startsWith(apiAuthPrefix);
+//   const isPublicRoute: boolean = publicRoutes.includes(nextUrl.pathname);
+//   const isAuthRoute: boolean = authRoutes.includes(nextUrl.pathname);
+
+//   // 🔍 if no NextAuth session, check for Bearer token
+//   if (!isLoggedIn) {
+//     const authHeader = req.headers.get("authorization");
+//     if (authHeader && authHeader.startsWith("Bearer ")) {
+//       const token = authHeader.split(" ")[1];
+//       try {
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+//         if (decoded) {
+//           isLoggedIn = true; 
+//         }
+//       } catch (err) {
+//         console.warn("Invalid JWT in middleware:", err);
+//       }
+//     }
+//   }
+
+//   if (isApiAuthRoute) return null;
+
+//   if (isAuthRoute) {
+//     if (isLoggedIn) {
+//       return Response.redirect(new URL(DEFAULT_LOGIN_DIRECT, nextUrl));
+//     }
+//     return null;
+//   }
+
+//   if (!isLoggedIn && !isPublicRoute) {
+//     return Response.redirect(new URL("/", nextUrl));
+//   }
+
+//   return null;
+// });
+
+// export const config = {
+//   matcher: [
+//     "/((?!.+\\.[\\w]+$|_next).*)", // all non-static files
+//     "/", 
+//     "/(api|trpc)(.*)"
+//   ],
+// };

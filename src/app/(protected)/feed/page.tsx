@@ -1,15 +1,14 @@
 'use client'
-import { getAllSnippets } from '@/common/actions/snippets'
 import React, { useEffect, useState } from 'react'
-import CodeEditor from '@/components/shared/CodeEditor'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Snippet } from '@/components/shared/Snippet/page'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Pagination } from '@/components/shared/Pagination/page'
-import { Search } from 'lucide-react'
+import { Filter, Search } from 'lucide-react'
 import { SearchBar } from '@/components/shared/SearchBar/page'
 import { Input } from '@/components/ui/input'
+import { LanguageFilter } from '@/components/shared/LanguageFilter/page'
 
 
 interface Snippet {
@@ -43,49 +42,82 @@ const Feed = () => {
   const [page, setPage] = useState(pageFromUrl)
   const [pagination, setPagination] = useState<Snippet['pagination'] | null>(null)
   const searchQuery: string | null = searchParams.get("search") || ""
-  console.log("searchquery", searchQuery)
+  const languageQuery: string | null = searchParams.get("language") || ""
+
 
   useEffect(() => {
-    router.push(`/feed?page=${page}`)
-  }, [page, router])
+    const params = new URLSearchParams();
+
+    if (page && page !== null) params.set("page", page.toString());
+    if (searchQuery) params.set("search", searchQuery);
+    if (languageQuery) params.set("language", languageQuery);
+
+    const queryString = params.toString();
+    router.push(`/feed${queryString ? `?${queryString}` : ""}`);
+  }, [page, searchQuery, languageQuery, router]);
+
 
   useEffect(() => {
     const fetchSnippets = async () => {
       try {
-        setLoading(true)
-        const resp = await getAllSnippets(page, 4, searchQuery)
-        console.log(resp)
-        if (resp.success && resp.snippets) {
+        setLoading(true);
+
+        const query = new URLSearchParams({
+          page: String(page),
+          limit: "5",
+          ...(searchQuery ? { searchText: searchQuery } : {}),
+          ...(languageQuery ? { language: languageQuery } : {}),
+        });
+
+        const resp = await fetch(`/api/snippets?${query.toString()}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          cache: "no-store", 
+        });
+
+        const data = await resp.json(); 
+
+        if (data.success && data.snippets) {
           setSnippets(
-            resp.snippets.map((snippet: any) => ({
+            data.snippets.map((snippet: any) => ({
               ...snippet,
               author: {
-                name: snippet.author.name ?? 'Unknown',
-                email: snippet.author.email ?? '',
+                name: snippet.author?.name ?? "Unknown",
+                email: snippet.author?.email ?? "",
               },
-              description: snippet.description ?? '',
+              description: snippet.description ?? "",
             }))
-          )
-          setPagination(resp.pagination)
+          );
+          setPagination(data.pagination);
         } else {
-          setError(resp.error || 'Failed to fetch snippets')
+          setError(data.error || "Failed to fetch snippets");
         }
       } catch (err) {
-        setError('An unexpected error occurred')
-        toast.error('Failed to fetch snippets')
-        console.error('Error fetching snippets:', err)
+        setError("An unexpected error occurred");
+        toast.error("Failed to fetch snippets");
+        console.error("Error fetching snippets:", err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchSnippets()
-  }, [page, searchQuery])
+    };
+
+    fetchSnippets();
+  }, [page, searchQuery, languageQuery]);
+
 
   useEffect(() => {
     setPage(1)
-  }, [searchQuery])
+  }, [searchQuery, languageQuery])
 
 
+  const handleClearFilters = () => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete("search")
+    params.delete("language")
+    router.push(`/feed?${params.toString()}`)
+  }
 
 
   return (
@@ -95,7 +127,14 @@ const Feed = () => {
         <p className="text-gray-600">Discover and explore code snippets from the community</p>
       </div>
 
-      <SearchBar />
+      <div className='flex flex-col justify-around gap-4 md:flex-row'>
+        <div className='w-full'>
+          <SearchBar />
+
+        </div>
+        <LanguageFilter language={languageQuery} />
+        <Button onClick={handleClearFilters} className='flex gap-2 items-center'> <Filter /> <span>Clear filter</span></Button>
+      </div>
 
       {loading ? (
         <div className="flex items-center justify-center min-h-[200px]">

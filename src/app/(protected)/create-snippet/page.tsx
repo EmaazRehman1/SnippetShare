@@ -20,11 +20,13 @@ import CodeEditor from '@/components/shared/CodeEditor'
 import { Button } from '@/components/ui/button'
 import { LanguageSelector } from '@/components/shared/LanguageSelector'
 import { useUser } from '@/common/hooks/useUser'
-import { createSnippetAction } from '@/common/actions/snippets'
+// import { createSnippetAction } from '@/common/actions/snippets'
 import { toast } from 'sonner'
+import { head } from 'lodash'
 
 const CreateSnippet = () => {
     const { user } = useUser();
+    console.log('user',user)
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -49,19 +51,32 @@ const CreateSnippet = () => {
             finalTags = data.tags.split(',').map((tag) => tag.trim())
         }
         const body = { ...data, authorId: user?.id, tags: finalTags }
-        
+
         try {
-            const resp = await createSnippetAction(body)
-            if (resp.success) {
-                toast.success(resp.message)
-                form.reset({
-                    code: '',
-                    title: '',
-                    description: '',
-                    language: '',
-                    tags: ''
-                });
+            const resp = await fetch('api/snippets', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+
+            })
+            if(resp.status !== 200) {
+                const errorData = await resp.json();
+                toast.error(errorData.message || "Failed to create snippet");
+                return;
             }
+            const data=await resp.json();
+            toast.success(data.message || "Snippet created successfully!");
+
+            form.reset({
+                code: '',
+                title: '',
+                description: '',
+                language: '',
+                tags: ''
+            });
+
         } catch (error: any) {
             toast.error("Failed to create snippet")
             console.log(error)
@@ -69,7 +84,7 @@ const CreateSnippet = () => {
     }
 
     return (
-        <div className="w-full flex justify-center items-center mt-6 flex-col">
+        <div className="w-full flex justify-center items-center mt-6 flex-col h-full">
             <h2 className="text-xl font-semibold mb-6">Create Snippet</h2>
 
             <Form {...form}>
@@ -77,7 +92,6 @@ const CreateSnippet = () => {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="flex flex-col md:flex-row gap-6 w-full max-w-6xl px-4 mt-6"
                 >
-                    {/* Left side - Code Editor */}
                     <div className="flex-1">
                         <FormField
                             name="language"
@@ -86,9 +100,9 @@ const CreateSnippet = () => {
                                 <FormItem className="mb-4">
                                     <FormLabel>Language *</FormLabel>
                                     <FormControl>
-                                        <LanguageSelector 
-                                            value={field.value} 
-                                            onChange={field.onChange} 
+                                        <LanguageSelector
+                                            value={field.value}
+                                            onChange={field.onChange}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -125,8 +139,6 @@ const CreateSnippet = () => {
                             </div>
                         )}
                     </div>
-
-                    {/* Right side - Form fields */}
                     <div className="flex-1 flex flex-col gap-4">
                         <FormField
                             name="title"
@@ -180,9 +192,9 @@ const CreateSnippet = () => {
                                 </FormItem>
                             )}
                         />
-                        
-                        <Button 
-                            type="submit" 
+
+                        <Button
+                            type="submit"
                             className="mt-4 w-full"
                             disabled={!selectedLanguage}
                         >

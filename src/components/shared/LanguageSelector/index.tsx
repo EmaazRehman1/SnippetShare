@@ -55,7 +55,7 @@ export const LanguageSelector = ({ value, onChange }: LanguageSelectorProps) => 
                   key={language.id}
                   value={language.id}
                   onSelect={(currentValue) => {
-                    onChange(currentValue) // ✅ update react-hook-form
+                    onChange(currentValue) 
                     setOpen(false)
                   }}
                 >

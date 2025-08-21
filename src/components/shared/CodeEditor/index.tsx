@@ -1,7 +1,20 @@
 'use client'
+import { useRouter } from 'next/navigation';
 import Editor from '@monaco-editor/react';
 import { useState, useCallback } from 'react';
-import { Copy, Download, Maximize2, Minimize2, Settings, Code } from 'lucide-react';
+import { Copy, Download, Maximize2, Minimize2, Settings, Code, Bookmark, BookmarkCheck } from 'lucide-react';
+import { useUser } from '@/common/hooks/useUser';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+
+type Snippet = {
+    id?: string;
+    title?: string;
+    code: string;
+    language: string;
+    authorId?: string;
+    isBookmarked?: boolean;
+};
 
 type Props = {
     language: string;
@@ -9,13 +22,18 @@ type Props = {
     onChange?: (value: string | undefined) => void;
     height?: string;
     title?: string;
-}
+    snippet?: Snippet;
+};
 
-function CodeEditor({ language, value, onChange, height = '60vh', title }: Props) {
+function CodeEditor({ language, value, onChange, height = '60vh', title, snippet }: Props) {
+    const router=useRouter()
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [theme, setTheme] = useState<'vs-dark' | 'light' | 'vs'>('vs-dark');
     const [showSettings, setShowSettings] = useState(false);
     const [copied, setCopied] = useState(false);
+    const { user } = useUser()
+
+    const [isBookmarked, setIsBookmarked] = useState(snippet?.isBookmarked || false);
 
     const handleChange = useCallback((value: string | undefined) => {
         if (onChange) {
@@ -23,15 +41,6 @@ function CodeEditor({ language, value, onChange, height = '60vh', title }: Props
         }
     }, [onChange]);
 
-    const copyToClipboard = async () => {
-        try {
-            await navigator.clipboard.writeText(value);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error('Failed to copy:', err);
-        }
-    };
 
     const downloadCode = () => {
         const extension = getFileExtension(language);
@@ -73,6 +82,62 @@ function CodeEditor({ language, value, onChange, height = '60vh', title }: Props
         return <Code className="w-4 h-4" />;
     };
 
+    const handleAdd = async (id: string) => {
+        console.log("dsadad", snippet)
+        if (!snippet?.id) {
+            toast.error("Snippet ID missing");
+            return;
+        }
+        const body = {
+            authorId: user?.id,
+            snippetIds: [snippet?.id],
+        };
+        setIsBookmarked(true)
+        try {
+            const resp = await fetch('/api/bookmark', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
+            });
+
+            if (resp.status === 201 || resp.status === 200) {
+                const data = await resp.json();
+                toast.success(data.message);
+            } else {
+                const data = await resp.json();
+                toast.error(data.message || "Failed to create bookmark");
+            }
+        } catch (error: any) {
+            console.error("Bookmark error:", error);
+            toast.error("Something went wrong");
+        }
+    };
+
+    const handleRemove = async (id: string) => {
+        try {
+            const resp = await fetch(`/api/bookmark/${id}`, {
+                method: "DELETE",
+            });
+
+            const data = await resp.json();
+            if (resp.ok) {
+                setIsBookmarked(false);
+                toast.success(data.message);
+                router.refresh();
+            } else {
+                toast.error(data.message || "Failed to remove bookmark");
+            }
+        } catch (err) {
+            console.error("Error removing bookmark:", err);
+            toast.error("Something went wrong");
+        }
+    };
+
+
+
+
     return (
         <div className={`relative bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 rounded-xl overflow-hidden shadow-2xl border border-slate-700/50 ${isFullscreen ? 'fixed inset-0 z-50' : ''
             }`}>
@@ -103,6 +168,19 @@ function CodeEditor({ language, value, onChange, height = '60vh', title }: Props
                     >
                         <Download className="w-4 h-4 text-slate-400 group-hover:text-white" />
                     </button>
+
+                    <button
+                        onClick={() => snippet?.id && (isBookmarked ? handleRemove(snippet.id) : handleAdd(snippet.id))}
+                        className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors group"
+                        title={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
+                    >
+                        {isBookmarked ? (
+                            <BookmarkCheck className="w-4 h-4 text-blue-500 group-hover:text-white" />
+                        ) : (
+                            <Bookmark className="w-4 h-4 text-slate-400 group-hover:text-white" />
+                        )}
+                    </button>
+
 
                     <button
                         onClick={() => setIsFullscreen(!isFullscreen)}

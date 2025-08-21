@@ -9,7 +9,7 @@ export default async function ProtectedLayout({ children }: Props) {
     return (
         <SessionProvider session={session}>
             <Header />
-            <main className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300">{children}</main>
+            <main className="bg-gradient-to-r from-gray-300 via-gray-400 to-gray-500">{children}</main>
         </SessionProvider>
   )
 }

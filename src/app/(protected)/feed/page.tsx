@@ -10,7 +10,6 @@ import { SearchBar } from '@/components/shared/SearchBar/page'
 import { Input } from '@/components/ui/input'
 import { LanguageFilter } from '@/components/shared/LanguageFilter/page'
 
-
 interface Snippet {
   author: {
     name: string
@@ -56,6 +55,7 @@ const Feed = () => {
     router.push(`/feed${queryString ? `?${queryString}` : ""}`);
   }, [page, searchQuery, languageQuery, router]);
 
+ 
 
   useEffect(() => {
     const fetchSnippets = async () => {

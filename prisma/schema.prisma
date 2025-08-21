@@ -45,6 +45,7 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   snippets      Snippet[]
+  bookmarks     Bookmark[] 
 
  
   @@map("users")
@@ -61,7 +62,20 @@ model Snippet{
   authorId      String   @db.ObjectId
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  
 
   author User @relation(fields: [authorId],references:[id])
 }
+
+model Bookmark {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  authorId  String    @db.ObjectId
+  snippetIds String[] @db.ObjectId
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  author    User      @relation(fields: [authorId], references: [id])
+  @@map("bookmarks")
+}
+
  

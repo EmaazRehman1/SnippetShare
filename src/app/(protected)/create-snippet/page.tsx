@@ -84,8 +84,8 @@ const CreateSnippet = () => {
     }
 
     return (
-        <div className="w-full flex justify-center items-center mt-6 flex-col h-full">
-            <h2 className="text-xl font-semibold mb-6">Create Snippet</h2>
+        <div className="w-full h-screen flex justify-center items-center flex-col">
+            <h2 className="text-2xl font-semibold">Create Snippet</h2>
 
             <Form {...form}>
                 <form

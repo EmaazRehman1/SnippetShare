@@ -11,7 +11,6 @@ type Params = {
 
 export async function GET(req: Request, { params }: Params) {
     const { id } = params;
-
     try {
         const snippet = db.snippet.findUnique({
             where: {

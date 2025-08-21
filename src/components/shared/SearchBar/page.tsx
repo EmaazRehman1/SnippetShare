@@ -43,7 +43,7 @@ export const SearchBar = () => {
         defaultValue={searchParams.get("search") ?? ""}
         onChange={handleChange}
         value={value}
-        className="w-full"
+        className="w-full placeholder:text-black"
       />
     </div>
   )

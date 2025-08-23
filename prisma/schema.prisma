@@ -57,7 +57,7 @@ model Snippet{
   description   String?
   code          String
   isPublic      Boolean @default(true)
-  language      String
+  language      String?
   tags          String[] @default([])
   authorId      String   @db.ObjectId
   createdAt     DateTime  @default(now())
@@ -77,5 +77,15 @@ model Bookmark {
   author    User      @relation(fields: [authorId], references: [id])
   @@map("bookmarks")
 }
+
+model Otp {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String
+  otp       String
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  expiresAt DateTime  
+}
+
 
  

@@ -17,7 +17,7 @@ export const ProfileSidebar = () => {
   ]
 
   return (
-    <div className="h-screen">
+    <div >
       <div className="md:hidden flex items-center justify-between bg-gray-900 p-4 shadow-lg">
         <h2 className="text-lg font-bold text-white">Profile</h2>
         <button

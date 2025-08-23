@@ -28,21 +28,31 @@ const Bookmarks = () => {
   }, []);
 
   if (loading) {
-    return <p className="text-slate-400">Loading bookmarks...</p>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="w-8 h-8 border-4 border-gray-500 border-dashed rounded-full animate-spin"></div>
+        <span className="ml-3 text-gray-500">Loading...</span>
+      </div>
+
+    );
   }
 
   if (bookmarks.length === 0) {
     return (
-    <div className="w-full h-full flex justify-center items-center">
-      <p className="text-black font-semibold ">No bookmarks yet.</p>
+      <div className="w-full h-full flex justify-center items-center">
+        <p className="text-black font-semibold ">No bookmarks yet.</p>
 
-    </div>
+      </div>
     )
   }
 
   return (
     <div className="p-4 space-y-4">
-      <h2 className="text-xl font-bold text-black-200">Your Bookmarks</h2>
+      <div className="w-full flex justify-center items-center">
+        <h2 className="text-3xl font-semibold mb-4">Bookmarks</h2>
+
+      </div>
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {bookmarks.map((bookmark) =>

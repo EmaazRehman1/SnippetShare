@@ -7,7 +7,7 @@ const {auth} = NextAuth(authConfig)
 
 // @ts-ignore
 export default auth((req) => {
-    const {nextUrl} = req;
+    const {nextUrl,cookies} = req;
     const isLoggedIn: boolean = !!req.auth;
 
     const isApiAuthRoute: boolean = nextUrl.pathname.startsWith(apiAuthPrefix);
@@ -27,6 +27,13 @@ export default auth((req) => {
 
     if(!isLoggedIn && !isPublicRoute) {
         return Response.redirect(new URL('/', nextUrl))
+    }
+
+    if (nextUrl.pathname.startsWith("/profile/env-files")) {
+        const isVerified = cookies.get("isVerified")?.value === "true";
+        if (!isVerified) {
+            return Response.redirect(new URL("/profile/verify-otp", nextUrl)); 
+        }
     }
 
     return null;

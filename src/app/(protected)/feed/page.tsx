@@ -146,9 +146,9 @@ const Feed = () => {
           <Snippet snippet={snippet} key={snippet.id} />
         ))
       ) : (
-        <div className="text-center py-12">
-          <div className="text-gray-500 text-lg mb-2">No code snippets found</div>
-          <p className="text-gray-400">Be the first to share a code snippet!</p>
+        <div className="text-center py-12 h-screen">
+          <div className="text-gray-800 text-lg mb-2">No code snippets found</div>
+          <p className="text-gray-700">Be the first to share a code snippet!</p>
           <Button
             className="mt-4 cursor-pointer"
             onClick={() => router.push('/create-snippet')}

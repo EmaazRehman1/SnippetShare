@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { Param } from "@prisma/client/runtime/library";
-// import { Session } from "node:inspector";
-import { Session } from "next-auth";
 import { auth } from "@/auth";
 export async function GET(req: Request) {
   const session = await auth();

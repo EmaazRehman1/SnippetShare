@@ -8,7 +8,6 @@ export const formSchema = z.object({
 
   code: z.string()
     .min(2, "Code must be at least 2 characters")
-    .max(1000, "Code must not exceed 1000 characters")
     .nonempty("Code is required"),
 
   language: z.string()

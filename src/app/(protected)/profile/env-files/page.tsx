@@ -87,19 +87,19 @@ const EnvFiles = () => {
   }
 
   const handleDownloadSnippet = (snippet: Snippet) => {
-  const element = document.createElement("a");
-  const file = new Blob([snippet.code], { type: "application/octet-stream" });
+    const element = document.createElement("a");
+    const file = new Blob([snippet.code], { type: "application/octet-stream" });
 
-  const safeTitle = snippet.title.replace(/\s+/g, "_").toLowerCase();
+    const safeTitle = snippet.title.replace(/\s+/g, "_").toLowerCase();
 
-  element.href = URL.createObjectURL(file);
-  element.download = `.env.${safeTitle}`; 
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element); 
-  URL.revokeObjectURL(element.href); 
-  toast.success(`Env downloaded successfully as .env.${safeTitle}`);
-};
+    element.href = URL.createObjectURL(file);
+    element.download = `.env.${safeTitle}`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    URL.revokeObjectURL(element.href);
+    toast.success(`Env downloaded successfully as .env.${safeTitle}`);
+  };
 
 
   return (
@@ -135,7 +135,7 @@ const EnvFiles = () => {
       )}
 
       {loading && (
-         <div className="flex justify-center items-center h-screen">
+        <div className="flex justify-center items-center h-screen">
           <div className="w-8 h-8 border-4 border-gray-500 border-dashed rounded-full animate-spin"></div>
           <span className="ml-3 text-gray-500">Loading...</span>
         </div>

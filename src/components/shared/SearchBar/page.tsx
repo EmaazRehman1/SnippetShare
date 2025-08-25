@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import React, { useCallback, useEffect } from "react"
 import { debounce } from "lodash"
 import { useRouter, useSearchParams } from "next/navigation"
+import { Search } from "lucide-react"
 
 
 export const SearchBar = () => {
@@ -38,13 +39,18 @@ export const SearchBar = () => {
 
   return (
     <div>
-      <Input
-        placeholder="Search code snippets..."
-        defaultValue={searchParams.get("search") ?? ""}
-        onChange={handleChange}
-        value={value}
-        className="w-full placeholder:text-black"
-      />
+      <div className="relative w-full max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <Input
+          placeholder="Search code snippets..."
+          defaultValue={searchParams.get("search") ?? ""}
+          onChange={handleChange}
+          value={value}
+          className="w-full pl-10 pr-4 py-2 rounded-2xl border border-gray-300 shadow-sm 
+               placeholder:text-gray-700 focus:border-blue-500 
+               focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+        />
+      </div>
     </div>
   )
 }

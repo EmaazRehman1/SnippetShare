@@ -84,28 +84,39 @@ const CreateSnippet = () => {
     }
 
     return (
-        <div className="w-full h-screen flex justify-center items-center flex-col">
-            <h2 className="text-2xl font-semibold">Create Snippet</h2>
+        <div className="w-full min-h-screen flex justify-center items-center flex-col py-8 px-4">
+            {/* Header with glass morphism effect */}
+            <div className="mb-8 text-center">
+                <div className="inline-block rounded-2xl ">
+                    <h2 className="text-3xl font-bold text-gray-800 mb-2">Create Code Snippet</h2>
+                    <p className="text-gray-700">Build and share your code with the community</p>
+                </div>
+            </div>
 
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="flex flex-col md:flex-row gap-6 w-full max-w-6xl px-4 mt-6"
+                    className="flex flex-col lg:flex-row gap-8 w-full max-w-7xl"
                 >
-                    <div className="flex-1">
+                    {/* Left Column - Code Editor */}
+                    <div className="flex-1 backdrop-blur-md bg-white/20 rounded-2xl p-6 shadow-xl border border-white/30">
                         <FormField
                             name="language"
                             control={form.control}
                             render={({ field }) => (
-                                <FormItem className="mb-4">
-                                    <FormLabel>Language *</FormLabel>
+                                <FormItem className="mb-6">
+                                    <FormLabel className="text-lg font-semibold text-gray-800">
+                                        Programming Language *
+                                    </FormLabel>
                                     <FormControl>
-                                        <LanguageSelector
-                                            value={field.value}
-                                            onChange={field.onChange}
-                                        />
+                                        <div className="bg-white/50 rounded-lg border border-white/50">
+                                            <LanguageSelector
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                            />
+                                        </div>
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage className="text-red-600" />
                                 </FormItem>
                             )}
                         />
@@ -116,90 +127,119 @@ const CreateSnippet = () => {
                                 control={form.control}
                                 render={({ field }) => (
                                     <FormItem className="h-full">
-                                        <FormLabel>Code *</FormLabel>
+                                        <FormLabel className="text-lg font-semibold text-gray-800">
+                                            Your Code *
+                                        </FormLabel>
                                         <FormControl>
-                                            <div className="rounded-md overflow-hidden border mt-2">
+                                            <div className="rounded-xl overflow-hidden border-2 border-white/50 mt-3 shadow-lg">
                                                 <CodeEditor
                                                     language={selectedLanguage}
                                                     value={field.value}
                                                     onChange={field.onChange}
-                                                    height="350px"
+                                                    height="400px"
                                                 />
                                             </div>
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-red-600" />
                                     </FormItem>
                                 )}
                             />
                         ) : (
-                            <div className="flex items-center justify-center h-[350px] border rounded-md bg-muted/50">
-                                <p className="text-muted-foreground">
-                                    Please select a language to start coding
-                                </p>
+                            <div className="flex items-center justify-center h-[400px] border-2 border-dashed border-white/50 rounded-xl bg-white/10 mt-3">
+                                <div className="text-center">
+                                    <div className="text-4xl mb-4 text-gray-600">💻</div>
+                                    <p className="text-lg font-medium text-gray-700 mb-2">
+                                        Ready to code?
+                                    </p>
+                                    <p className="text-gray-600">
+                                        Select a programming language to get started
+                                    </p>
+                                </div>
                             </div>
                         )}
                     </div>
-                    <div className="flex-1 flex flex-col gap-4">
-                        <FormField
-                            name="title"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Title *</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter snippet title" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
 
-                        <FormField
-                            name="description"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Description</FormLabel>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder="Describe your snippet..."
-                                            className="resize-none"
-                                            rows={4}
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                    {/* Right Column - Snippet Details */}
+                    <div className="flex-1 backdrop-blur-md bg-white/20 rounded-2xl p-6 shadow-xl border border-white/30">
+                        <div className="space-y-6">
+                            <div className="text-center mb-6">
+                                <h3 className="text-xl font-semibold text-gray-800">Snippet Details</h3>
+                                <p className="text-gray-600 text-sm mt-1">Add information about your code</p>
+                            </div>
 
-                        <FormField
-                            name="tags"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Tags</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="e.g. react, typescript, hooks"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Add comma-separated tags
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                            <FormField
+                                name="title"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-lg font-semibold text-gray-800">
+                                            Title *
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input 
+                                                placeholder="e.g. React useEffect Hook Example" 
+                                                className="bg-white/50 border-white/50 text-gray-800 placeholder-gray-600 h-12 text-base rounded-lg focus:bg-white/70 transition-all"
+                                                {...field} 
+                                            />
+                                        </FormControl>
+                                        <FormMessage className="text-red-600" />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <Button
-                            type="submit"
-                            className="mt-4 w-full"
-                            disabled={!selectedLanguage}
-                        >
-                            Save Snippet
-                        </Button>
+                            <FormField
+                                name="description"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-lg font-semibold text-gray-800">
+                                            Description
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder="Explain what your code does, how to use it, or any special features..."
+                                                className="bg-white/50 border-white/50 text-gray-800 placeholder-gray-600 resize-none rounded-lg focus:bg-white/70 transition-all min-h-[120px]"
+                                                rows={5}
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage className="text-red-600" />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                name="tags"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-lg font-semibold text-gray-800">
+                                            Tags
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="react, hooks, javascript, frontend"
+                                                className="bg-white/50 border-white/50 text-gray-800 placeholder-gray-600 h-12 text-base rounded-lg focus:bg-white/70 transition-all"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormDescription className="text-gray-600 text-sm">
+                                            Add comma-separated tags to help others find your snippet
+                                        </FormDescription>
+                                        <FormMessage className="text-red-600" />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <Button
+                                type="submit"
+                                className="w-full h-14 text-lg font-semibold text-white shadow-xl rounded-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none mt-8"
+                                disabled={!selectedLanguage}
+                            >
+                                Save Snippet
+                                
+                            </Button>
+                        </div>
                     </div>
                 </form>
             </Form>

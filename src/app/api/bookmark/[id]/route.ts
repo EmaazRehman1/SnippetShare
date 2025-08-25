@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { auth } from "@/auth"; // if you’re using NextAuth
+import { auth } from "@/auth";
 
-// DELETE /api/bookmark/:snippetId
+interface RouteContext {
+  params: Promise<{ id: string }>;
+}
+
 export async function DELETE(
   req: Request,
-  { params }: { params: { snippetId: string } }
+  context: RouteContext
 ) {
   try {
     const session = await auth();
@@ -16,9 +19,10 @@ export async function DELETE(
       );
     }
 
-    const { snippetId } = params;
+    // Await the params promise
+    const params = await context.params;
+    const { id } = params;
 
-    // Get the user's bookmark document
     const bookmark = await db.bookmark.findFirst({
       where: { authorId: session.user.id },
     });
@@ -30,8 +34,9 @@ export async function DELETE(
       );
     }
 
-    // Remove the snippetId from array
-    const updatedSnippets = bookmark.snippetIds.filter((id) => id !== snippetId);
+    const updatedSnippets = bookmark.snippetIds.filter(
+      (snippetId) => snippetId !== id
+    );
 
     await db.bookmark.update({
       where: { id: bookmark.id },

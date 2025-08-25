@@ -1,14 +1,23 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { encrypt, decrypt } from "@/utils/encryption";
+
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
+        const { authorId, title, code, language, description, tags } = await req.json();
+
+        const encrypted = encrypt(code);
 
         const env = await db.snippet.create({
             data: {
-                ...body,
+                authorId,
+                title,
+                description,
+                code: JSON.stringify(encrypted),
+                language,                        
+                tags: tags || [],
                 isPublic: false,
             },
         });
@@ -25,29 +34,35 @@ export async function POST(req: Request) {
     }
 }
 
-export async function GET(){
+
+export async function GET() {
     const session = await auth();
-    const id=session?.user?.id;
+    const id = session?.user?.id;
     console.log(id);
     try {
         const envFiles = await db.snippet.findMany({
-            where:{
-                authorId:id,
-                isPublic:false
+            where: {
+                authorId: id,
+                isPublic: false
             },
-            include:{
-                author:{
-                    select:{
-                        id:true,
-                        email:true,
-                        name:true,
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        email: true,
+                        name: true,
                     }
                 }
             }
         });
+        const decryptedFiles = envFiles.map((file) => ({
+            ...file,
+            code: decrypt(JSON.parse(file.code)),
+        }));
+    
         return NextResponse.json({
             message: "Environment variable files fetched successfully",
-            data: envFiles,
+            data: decryptedFiles,
         });
     } catch (error: any) {
         return NextResponse.json({

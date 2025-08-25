@@ -85,7 +85,6 @@ const CreateSnippet = () => {
 
     return (
         <div className="w-full min-h-screen flex justify-center items-center flex-col py-8 px-4">
-            {/* Header with glass morphism effect */}
             <div className="mb-8 text-center">
                 <div className="inline-block rounded-2xl ">
                     <h2 className="text-3xl font-bold text-gray-800 mb-2">Create Code Snippet</h2>
@@ -98,7 +97,6 @@ const CreateSnippet = () => {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="flex flex-col lg:flex-row gap-8 w-full max-w-7xl"
                 >
-                    {/* Left Column - Code Editor */}
                     <div className="flex-1 backdrop-blur-md bg-white/20 rounded-2xl p-6 shadow-xl border border-white/30">
                         <FormField
                             name="language"
@@ -159,7 +157,6 @@ const CreateSnippet = () => {
                         )}
                     </div>
 
-                    {/* Right Column - Snippet Details */}
                     <div className="flex-1 backdrop-blur-md bg-white/20 rounded-2xl p-6 shadow-xl border border-white/30">
                         <div className="space-y-6">
                             <div className="text-center mb-6">

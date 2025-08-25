@@ -17,7 +17,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 bg-gradient-to-b from-gray-900 via-black to-gray-950 text-white">
-      {/* Logo + Title */}
       <div className="flex flex-col items-center gap-3">
         <Image
           src="/logo.png"
@@ -33,9 +32,7 @@ export default function Home() {
         </p>
       </div>
 
-      {/* Auth Buttons */}
       <div className="mt-10 flex flex-col gap-4 w-full max-w-xs">
-        {/* GitHub */}
         <Button
           onClick={() => handleSignIn("github")}
           disabled={loadingProvider === "github"}
@@ -51,7 +48,6 @@ export default function Home() {
           )}
         </Button>
 
-        {/* Google */}
         <Button
           onClick={() => handleSignIn("google")}
           disabled={loadingProvider === "google"}
@@ -68,7 +64,6 @@ export default function Home() {
         </Button>
       </div>
 
-      {/* Footer */}
       <footer className="mt-16 text-sm text-gray-500">
         © {new Date().getFullYear()} SnippetShare. All rights reserved.
       </footer>
